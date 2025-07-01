@@ -20,10 +20,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
-]
+# Ensure that Django can find the 'api' app - if the import fails, add the app to INSTALLED_APPS.
+# Make sure the include path is correct: 'api.urls'.
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -32,10 +30,12 @@ schema_view = get_schema_view(
         description="Test description",
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny],
 )
 
-urlpatterns += [
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('tic_tac_toe_backend.api.urls')),  # Explicit import path for the urls.py
     re_path(
         r'^docs/$',
         schema_view.with_ui('swagger', cache_timeout=0),
@@ -47,7 +47,7 @@ urlpatterns += [
         name='schema-redoc'
     ),
     re_path(
-        r'^swagger\.json$',
+        r'^swagger\\.json$',
         schema_view.without_ui(cache_timeout=0),
         name='schema-json'
     ),
